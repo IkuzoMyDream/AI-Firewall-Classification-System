@@ -1,0 +1,13 @@
+| Layer    | Feature                | Why it’s stable                             |
+| -------- | ---------------------- | ------------------------------------------- |
+| **L3**   | `avg_latency`          | Higher for stateful/proxy due to inspection |
+|          | `packet_loss`          | Stateful/proxy may drop abnormal packets    |
+|          | `ttl_return`           | Proxy/firewall often changes TTL            |
+|          | `icmp_reachable`       | Some firewalls block ICMP entirely          |
+| **L4**   | `filtered_ports_count` | Reflects how many ports silently dropped    |
+|          | `scan_time`            | Stateful scanning takes longer              |
+|          | `syn_ack_ratio`        | Stateful firewall drops unsolicited SYNs    |
+|          | `tcp_reset_ratio`      | Stateless returns RST; stateful/proxy drops |
+| **L7**   | `response_time`        | Proxy latency is inherently higher          |
+|          | `header_modified`      | Only proxy modifies headers                 |
+| **Meta** | `firewall_label`       | target class                                |

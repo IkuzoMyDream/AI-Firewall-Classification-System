@@ -40,11 +40,11 @@ The system classifies networks into **5 distinct categories**:
                     192.168.56.1
                           |
                  vboxnet0 (Host-only)
-    ________________________________________________
-    |           |           |           |          |
-192.168.56.10  .11         .12         .13        .14
-   VM1         VM2         VM3         VM4        VM5
-  NoFW      Stateless    Stateful     Proxy       NAT
+    _____________________________________
+    |           |           |           | 
+192.168.56.10  .11         .12         .13        
+   VM1         VM2         VM3         VM4        
+  NoFW      Stateless    Stateful     Proxy       
 ```
 
 ### Virtual Machine Configuration
@@ -55,7 +55,6 @@ The system classifies networks into **5 distinct categories**:
 | **VM2** | Stateless | Ubuntu 22.04 | 1 | 512 MB | 6 GB | Host-only | `192.168.56.11/24` | L3 | iptables |
 | **VM3** | Stateful | Ubuntu 22.04 | 1 | 512 MB | 6 GB | Host-only | `192.168.56.12/24` | L3/L4 | ufw |
 | **VM4** | Proxy | Ubuntu 22.04 | 1 | 768 MB | 8 GB | Host-only | `192.168.56.13/24` | L7 | Squid |
-| **VM5** | NAT | Ubuntu 22.04 | 1 | 512 MB | 6 GB | NAT + Host-only | `192.168.56.14/24` | L3 | VirtualBox NAT |
 
 ## ⚙️ Firewall Configuration
 
@@ -93,15 +92,6 @@ sudo sed -i '/http_access deny all/i http_access allow all' /etc/squid/squid.con
 sudo systemctl restart squid
 ```
 **Purpose**: Simulate L7 proxy that modifies HTTP headers and adds latency
-
-### VM5: NAT
-```bash
-# No OS configuration needed
-# Configure in VirtualBox:
-# - Adapter 1: NAT
-# - Adapter 2: Host-only (vboxnet0)
-```
-**Purpose**: Simulate NAT behavior with TTL and source IP translation
 
 ## 🔍 Feature Engineering
 
@@ -165,14 +155,6 @@ The trained model should achieve:
 - **Accuracy**: >90% on test set
 - **Inference Time**: <2 seconds per target
 - **False Positive Rate**: <5%
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📝 License
-
-This project is for educational purposes only. Use responsibly and only on networks you own or have permission to test.
 
 ## 👨‍💻 Author
 

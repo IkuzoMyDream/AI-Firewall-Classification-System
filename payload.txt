@@ -1,0 +1,10 @@
+| ชั้น (Layer) | Packet / Payload ที่ส่ง | Tool / Command Template | วัตถุประสงค์ (Feature ที่ได้) | หมายเหตุ |
+| --- | --- | --- | --- | --- |
+| **L3 (Network / ICMP)** | ICMP Echo Request (payload 56 bytes) | `ping -c 5 <IP>` | `avg_latency`, `packet_loss`, `ttl_return`, `icmp_reachable` | ใช้วัด latency, loss, TTL จาก response |
+|  | ICMP Echo Request (payload 1400 bytes) | `ping -c 5 -s 1400 <IP>` | `packet_loss` | ตรวจว่ามีการ drop packet ขนาดใหญ่หรือไม่ |
+| **L4 (Transport / TCP)** | TCP SYN → ทุกพอร์ต 1–1024 | `sudo nmap -sS -p 1-1024 <IP> -oN scan_<IP>.txt` | `open_ports_count`, `filtered_ports_count`, `scan_time`, `tcp_reachable` | เก็บจำนวน port ที่ open/filtered และเวลาสแกนทั้งหมด |
+|  | TCP SYN (เฉพาะ port 80) | `sudo hping3 -S -p 80 -c 5 <IP>` | `syn_ack_ratio` | ตรวจอัตรา SYN/ACK กลับจาก firewall (stateless vs stateful) |
+|  | TCP SYN (port ปิด เช่น 22) | `sudo hping3 -S -p 22 -c 5 <IP>` | `tcp_reset_ratio` | ใช้วัดว่าระบบตอบ RST หรือ drop เฉยๆ |
+| **L7 (Application / HTTP)** | HTTP HEAD Request | `curl -s -I --max-time 5 http://<IP>` | `response_code`, `response_time`, `content_length`, `server_field_diff`, `service_name` | baseline สำหรับพอร์ตที่เปิด (ส่วนมากคือ 80 หรือ 3128) |
+|  | HTTP HEAD Request + Custom Header | `curl -s -I -H "X-AIFW-Test: 1" --max-time 5 http://<IP>` | `header_modified`, `response_time` | ตรวจการแทรก header เช่น “Via”, “Proxy-Agent” |
+| **Overall (Meta)** | รวมผลจากทุก layer | — (derived จาก ping + nmap + curl) | `icmp_reachable`, `tcp_reachable`, `service_name`, `firewall_label` | ใช้กำหนด class label (0–3) |
