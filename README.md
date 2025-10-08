@@ -7,6 +7,7 @@
 
 ![AI Firewall Classification System Topology](docs/images/image.png)
 
+
 ## Overview
 
 The **AI Firewall Classification System** is a machine learning-based tool that automatically detects and classifies network firewall types based on their behavioral characteristics. The system analyzes network behavior patterns including ICMP responses, TCP port states, scan timing, SYN/ACK ratios, and HTTP header modifications to accurately identify firewall implementations.
