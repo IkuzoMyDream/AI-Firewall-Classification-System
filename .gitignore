@@ -27,22 +27,21 @@ wheels/
 .ipynb_checkpoints
 *.ipynb
 
-# Data files
-*.csv
+# Data files (keep example data)
 *.dat
-*.json
 *.log
 
-# Model files
-*.pkl
+# Model files (keep trained model for demo)
 *.h5
-*.model
 *.joblib
 
-# Results
-results/
+# Results (keep for demonstration)
+# Note: confusion matrices, metrics, and learning curves are included for reproducibility
+
+# Large datasets (exclude from git)
 data/raw/*.csv
 data/processed/*.csv
+!data/processed/dataset.csv
 
 # IDE
 .vscode/

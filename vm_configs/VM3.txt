@@ -1,0 +1,64 @@
+# VM3 Configuration - Stateful Firewall
+
+## Network Configuration
+
+### File: `/etc/netplan/01-netcfg.yaml`
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:       # Host-only (Kali)
+      dhcp4: no
+      addresses: [192.168.56.12/24]
+      nameservers:
+        addresses: [8.8.8.8]
+    enp0s8:       # NAT Network (Internet)
+      dhcp4: true
+```
+
+### Apply Configuration:
+```bash
+sudo netplan apply
+```
+
+---
+
+## Firewall Configuration
+
+**Type:** Stateful Firewall  
+**Layer:** L3/L4 (Network/Transport Layer)  
+**Tool:** `ufw` (Uncomplicated Firewall)  
+
+### Setup:
+```bash
+# Install ufw
+sudo apt install ufw -y
+
+# Enable firewall
+sudo ufw enable
+
+# Default policy: deny incoming, allow outgoing
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+```
+
+**Purpose:** Simulate stateful firewall with connection tracking. Only allows traffic initiated from inside.
+
+---
+
+## Verification:
+
+```bash
+# Check ufw status
+sudo ufw status verbose
+
+# Check iptables rules (ufw uses iptables underneath)
+sudo iptables -L -n -v
+```
+
+**Expected Behavior:**
+- All incoming connections denied by default
+- Outgoing connections allowed
+- Connection tracking enabled (ESTABLISHED,RELATED allowed)
+- High TCP reset ratio on unsolicited incoming packets

@@ -1,0 +1,110 @@
+{
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "confusion_matrix": [
+    [
+      50,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      50,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      50,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      50
+    ]
+  ],
+  "per_class": {
+    "No Firewall": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 50
+    },
+    "Stateless": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 50
+    },
+    "Stateful": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 50
+    },
+    "Proxy": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 50
+    }
+  },
+  "cross_validation": {
+    "cv_scores": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "cv_mean": 1.0,
+    "cv_std": 0.0,
+    "cv_min": 1.0,
+    "cv_max": 1.0
+  },
+  "learning_curve": {
+    "train_sizes": [
+      80,
+      160,
+      240,
+      320,
+      400,
+      480,
+      560,
+      640,
+      720,
+      800
+    ],
+    "train_mean": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "test_mean": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "generalization_gap": 0.0
+  }
+}

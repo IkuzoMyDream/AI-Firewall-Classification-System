@@ -1,13 +1,20 @@
-| Layer    | Feature                | Why it’s stable                             |
-| -------- | ---------------------- | ------------------------------------------- |
-| **L3**   | `avg_latency`          | Higher for stateful/proxy due to inspection |
-|          | `packet_loss`          | Stateful/proxy may drop abnormal packets    |
-|          | `ttl_return`           | Proxy/firewall often changes TTL            |
-|          | `icmp_reachable`       | Some firewalls block ICMP entirely          |
-| **L4**   | `filtered_ports_count` | Reflects how many ports silently dropped    |
-|          | `scan_time`            | Stateful scanning takes longer              |
-|          | `syn_ack_ratio`        | Stateful firewall drops unsolicited SYNs    |
-|          | `tcp_reset_ratio`      | Stateless returns RST; stateful/proxy drops |
-| **L7**   | `response_time`        | Proxy latency is inherently higher          |
-|          | `header_modified`      | Only proxy modifies headers                 |
-| **Meta** | `firewall_label`       | target class                                |
+| Layer    | Feature                | Description                                              | Discriminative Power |
+| -------- | ---------------------- | -------------------------------------------------------- | -------------------- |
+| **L3**   | `avg_latency`          | Average ICMP round-trip time (ms)                        | Low (0.02)           |
+|          | `packet_loss`          | Packet loss percentage (0-100%)                          | None (0.00)          |
+|          | `ttl_return`           | Time-to-live value from ICMP response                    | None (0.00)          |
+|          | `icmp_reachable`       | Whether target responds to ICMP (0/1)                    | None (0.00)          |
+| **L4**   | `filtered_ports_count` | Number of filtered/dropped ports (1-1024 scan)           | High (0.17)          |
+|          | `scan_time`            | Time to complete nmap scan (seconds)                     | Medium (0.09)        |
+|          | `syn_ack_ratio`        | Ratio of SYN/ACK responses (0.0-1.0, port 80)            | Very High (0.17)     |
+|          | `tcp_reset_ratio`      | Ratio of RST responses (0.0-1.0, port 22)                | Very High (0.19)     |
+| **L7**   | `response_time`        | HTTP response time (ms)                                  | Medium (0.05)        |
+|          | `header_modified`      | Proxy headers detected (0/1)                             | **Highest (0.31)**   |
+| **Meta** | `firewall_label`       | Target class: 0=None, 1=Stateless, 2=Stateful, 3=Proxy  | (Output)             |
+
+## Feature Importance (from Random Forest):
+1. **header_modified** (30.8%) - Best predictor for proxy firewalls
+2. **tcp_reset_ratio** (18.9%) - Distinguishes stateful behavior  
+3. **syn_ack_ratio** (17.2%) - Connection handling patterns
+4. **filtered_ports_count** (16.7%) - Port filtering detection
+5. **scan_time** (8.9%) - Response timing differences

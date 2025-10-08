@@ -1,0 +1,70 @@
+# VM4 Configuration - Proxy Firewall
+
+## Network Configuration
+
+### File: `/etc/netplan/01-netcfg.yaml`
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:       # Host-only (Kali)
+      dhcp4: no
+      addresses: [192.168.56.13/24]
+      nameservers:
+        addresses: [8.8.8.8]
+    enp0s8:       # NAT Network (Internet)
+      dhcp4: true
+```
+
+### Apply Configuration:
+```bash
+sudo netplan apply
+```
+
+---
+
+## Firewall Configuration
+
+**Type:** Proxy Firewall  
+**Layer:** L7 (Application Layer)  
+**Tool:** `Squid` Proxy Server  
+
+### Setup:
+```bash
+# Install Squid
+sudo apt install squid -y
+
+# Enable and start Squid service
+sudo systemctl enable squid
+sudo systemctl start squid
+
+# Allow all clients (for testing)
+sudo sed -i '/http_access deny all/i http_access allow all' /etc/squid/squid.conf
+
+# Restart Squid to apply changes
+sudo systemctl restart squid
+```
+
+**Purpose:** Simulate proxy firewall that modifies HTTP headers and adds processing latency at application layer.
+
+---
+
+## Verification:
+
+```bash
+# Check Squid status
+sudo systemctl status squid
+
+# Check Squid is listening on port 3128
+sudo netstat -tlnp | grep 3128
+
+# Test proxy locally
+curl -x http://localhost:3128 http://example.com -I
+```
+
+**Expected Behavior:**
+- Squid listening on port 3128
+- HTTP headers modified (Via, X-Cache, X-Squid headers added)
+- Increased response time due to proxy processing
+- Application-layer filtering and caching

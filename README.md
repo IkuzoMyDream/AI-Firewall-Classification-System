@@ -1,6 +1,11 @@
 # AI Firewall Classification System
 
-![AI Firewall Classification System Topology](docs/images/image-1.png)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3%2B-orange)](https://scikit-learn.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey)](https://www.linux.org/)
+
+![AI Firewall Classification System Topology](docs/images/image.png)
 
 ## Overview
 
@@ -153,6 +158,39 @@ The machine learning model uses 11 stable behavioral features for classification
 ### Target Variable
 - **firewall_label**: Firewall classification (0-3)
 
+## Project Structure
+
+```
+AI-Firewall-Classification-System/
+├── data/
+│   ├── raw/              # Raw collected data
+│   └── processed/        # Processed datasets (dataset.csv)
+├── docs/
+│   ├── images/           # Documentation images
+│   ├── feature.txt       # Feature descriptions and importance
+│   └── payload.txt       # Network payload specifications
+├── models/
+│   └── firewall_classifier.pkl   # Trained Random Forest model
+├── results/
+│   ├── confusion_matrices/       # Confusion matrix plots
+│   └── metrics/                  # Performance metrics and plots
+├── src/
+│   ├── data_collector.py         # Feature collection script
+│   ├── train_model.py            # Model training script
+│   ├── classify.py               # Real-time classification
+│   └── validate_model.py         # Model validation
+├── vm_configs/
+│   ├── VM1.txt           # No Firewall configuration
+│   ├── VM2.txt           # Stateless Firewall (iptables)
+│   ├── VM3.txt           # Stateful Firewall (ufw)
+│   └── VM4.txt           # Proxy Firewall (Squid)
+├── examples/
+│   └── validation_example.md     # Validation examples
+├── requirements.txt      # Python dependencies
+├── LICENSE              # MIT License
+└── README.md            # This file
+```
+
 ## Getting Started
 
 ### Prerequisites
@@ -202,38 +240,69 @@ sudo apt install -y python3 python3-pip
 pip3 install scikit-learn pandas numpy matplotlib seaborn
 ```
 
-#### Step 4: Collect Training Data
+#### Step 4: Clone Repository
 
 ```bash
-# Collect data from all VMs (sequential)
-sudo python3 data_collector.py \
-  --targets 192.168.56.10,192.168.56.11,192.168.56.12,192.168.56.13 \
-  --label-map 192.168.56.10=0,192.168.56.11=1,192.168.56.12=2,192.168.56.13=3 \
-  --output dataset.csv
+# Clone the project
+git clone https://github.com/IkuzoMyDream/AI-Firewall-Classification-System.git
+cd AI-Firewall-Classification-System
 
-# Collect multiple samples (recommended: 30+ per VM)
-sudo python3 data_collector.py \
-  --targets-file targets.txt \
-  --label-map 192.168.56.10=0,192.168.56.11=1,192.168.56.12=2,192.168.56.13=3 \
-  --repeat 30 \
-  --output dataset.csv
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Give hping3 raw socket capability (to run without sudo)
+sudo setcap cap_net_raw+ep $(which hping3)
 ```
 
-#### Step 5: Train Machine Learning Model
+#### Step 5: Collect Training Data
 
 ```bash
-# Train classifier on collected data
-python3 train_model.py --input dataset.csv --output model.pkl
+# Collect data from all VMs (recommended: 250+ samples per VM)
+python src/data_collector.py \
+  --targets 192.168.56.10 192.168.56.11 192.168.56.12 192.168.56.13 \
+  --label-map 192.168.56.10:0 192.168.56.11:1 192.168.56.12:2 192.168.56.13:3 \
+  --repeat 250 \
+  --output data/processed/dataset.csv
 ```
 
-#### Step 6: Classify Unknown Firewalls
+#### Step 6: Train Machine Learning Model
+
+```bash
+# Train Random Forest classifier
+python src/train_model.py
+
+# Outputs:
+# - models/firewall_classifier.pkl
+# - results/metrics/metrics.json
+# - results/confusion_matrices/confusion_matrix.png
+# - results/metrics/feature_importance.png
+# - results/metrics/learning_curve.png
+```
+
+#### Step 7: Classify Unknown Firewalls
 
 ```bash
 # Classify a single target
-sudo python3 classify.py --target <IP_ADDRESS> --model model.pkl
+python src/classify.py 192.168.56.10
 
 # Classify multiple targets
-sudo python3 classify.py --targets-file unknown_hosts.txt --model model.pkl
+python src/classify.py 192.168.56.10 192.168.56.11 192.168.56.12 192.168.56.13
+
+# With debug output
+python src/classify.py 192.168.56.13 --debug
+```
+
+#### Step 8: Validate Model on New Data
+
+```bash
+# Collect fresh validation data
+python src/data_collector.py \
+  --targets 192.168.56.10 192.168.56.11 192.168.56.12 192.168.56.13 \
+  --repeat 20 \
+  --output validation_data.csv
+
+# Validate model
+python src/validate_model.py validation_data.csv
 ```
 
 ## Expected Performance
@@ -277,14 +346,10 @@ This project is for educational and research purposes only. Users are responsibl
 
 ## Author
 
-**IkuzoMyDream**
+**winnietheSUii**
 
 GitHub: [https://github.com/winnietheSUii](https://github.com/winnietheSUii)
 
 ## Acknowledgments
 
 This project was developed as part of network security research to understand firewall behavior classification through machine learning techniques.
-
----
-
-If you find this project useful for your research or learning, please consider giving it a star on GitHub.

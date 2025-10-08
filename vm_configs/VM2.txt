@@ -1,0 +1,63 @@
+# VM2 Configuration - Stateless Firewall
+
+## Network Configuration
+
+### File: `/etc/netplan/01-netcfg.yaml`
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:       # Host-only (Kali)
+      dhcp4: no
+      addresses: [192.168.56.11/24]
+      nameservers:
+        addresses: [8.8.8.8]
+    enp0s8:       # NAT Network (Internet)
+      dhcp4: true
+```
+
+### Apply Configuration:
+```bash
+sudo netplan apply
+```
+
+---
+
+## Firewall Configuration
+
+**Type:** Stateless Firewall  
+**Layer:** L3 (Network Layer)  
+**Tool:** `iptables`  
+
+### Setup:
+```bash
+# Install iptables
+sudo apt install iptables -y
+
+# Block SSH port (port 22) - simulate stateless filtering
+sudo iptables -A INPUT -p tcp --dport 22 -j DROP
+
+# Make rules persistent
+sudo apt install iptables-persistent -y
+sudo netfilter-persistent save
+```
+
+**Purpose:** Simulate stateless firewall that drops packets on specific ports without connection tracking.
+
+---
+
+## Verification:
+
+```bash
+# Check iptables rules
+sudo iptables -L -n -v
+
+# Test SSH blocking
+telnet localhost 22  # Should timeout
+```
+
+**Expected Behavior:**
+- Port 22 (SSH) filtered/dropped
+- Other ports respond normally
+- No connection state tracking
