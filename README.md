@@ -1,6 +1,6 @@
 # AI Firewall Classification System
 
-![AI Firewall Classification System Topology](image-1.png)
+![AI Firewall Classification System Topology](docs/images/image-1.png)
 
 ## Overview
 
